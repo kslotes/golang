@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"io"
 	"log"
 	"os"
 )
@@ -23,7 +22,7 @@ type Order struct {
 }
 
 func main() {
-	file, err := os.Open("ejemplo.csv")
+	file, err := os.Open("data.csv")
 	if err != nil {
         log.Fatal(err);		
 		return
@@ -33,21 +32,37 @@ func main() {
 	reader := csv.NewReader(file)
 
 
-	// Leer registros
+	// Crear un slice para almacenar las órdenes
+	var orders []Order
 	for {
 		record, err := reader.Read()
-        if err == io.EOF {
-            break
-        }
 		if err != nil {
-			log.Fatal(err)
+			break
 		}
 
-        for value := range record {
-            fmt.Printf("%s\n", record[value])
-        }
 		// Crear una instancia de Order y llenarla con los datos del registro
+		order := Order{
+			OrderNumber:   record[0],
+			OrderType:     record[1],
+			AssetType:     record[2],
+			FiatType:      record[3],
+			TotalPrice:    record[4],
+			Price:         record[5],
+			Quantity:      record[6],
+			ExchangeRate:  record[7],
+			Counterparty:  record[8],
+			Status:        record[9],
+			CreatedTime:   record[10],
+		}
 
+		orders = append(orders, order)
+	}
+
+	// Imprimir las órdenes
+	for _, order := range orders {
+        fmt.Println("---")
+        fmt.Printf("OrderType: %s\nAssetType: %s\nFiatType: %s\nTotalPrice: %s\nPrice: %s\nQuantity: %s\n",
+            order.OrderType, order.AssetType, order.FiatType, order.TotalPrice, order.Price, order.Quantity);
 	}
 
 	// Imprimir las órdenes
